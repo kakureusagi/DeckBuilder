@@ -28,6 +28,7 @@ namespace App
 
 		readonly List<CardPresenter> cards = new();
 
+		Game game;
 		Mouse mouse;
 		CardPresenter currentCard;
 		EnemyPresenter currentEnemyPresenter;
@@ -37,6 +38,9 @@ namespace App
 
 		void Start()
 		{
+			// 雑にここで開始する
+			game = new Game();
+			
 			mouse = new Mouse(Camera.main);
 			chain.Hide();
 
@@ -46,14 +50,14 @@ namespace App
 				hand.Add(card);
 			}
 			
-			player.Initialize(new Player(80));
+			player.Initialize(game.Player);
 
-			enemy.Initialize(new Enemy(100));
+			enemy.Initialize(game.Enemies[0]);
 			enemyManager.Initialize(new[] { enemy });
 
 			states = new Dictionary<State.State, IState>
 			{
-				{ State.State.PlayerTurn, new PlayerState(mouse, chain, hand, player, enemyManager) },
+				{ State.State.PlayerTurn, new PlayerState(game, mouse, chain, hand, player, enemyManager, new DamageCalculator()) },
 			};
 
 			currentState = states[State.State.PlayerTurn];

@@ -7,6 +7,7 @@ namespace App
 {
 	public class EnemyPresenter : MonoBehaviour
 	{
+		public int Id => enemy.Id;
 		public Collider2D Collider => collider;
 		
 		
@@ -21,6 +22,8 @@ namespace App
 
 		Enemy enemy;
 		UniTaskCompletionSource animationTask;
+
+		AttackPrediction attackPrediction;
 
 		public void Initialize(Enemy enemy)
 		{
@@ -39,6 +42,18 @@ namespace App
 			animationTask = null;
 		}
 
+		public void SetPrediction(AttackPrediction prediction)
+		{
+			attackPrediction = prediction;
+			UpdateHp();
+		}
+
+		public void ResetPrediction()
+		{
+			attackPrediction = null;
+			UpdateHp();
+		}
+
 		public void Anim_OnAttackFinish()
 		{
 			if (animationTask == null)
@@ -51,7 +66,14 @@ namespace App
 
 		void UpdateHp()
 		{
-			hp.text = $"{enemy.Hp.Value}/{enemy.MaxHp.Value}";
+			if (attackPrediction == null)
+			{
+				hp.text = $"{enemy.Hp.Value}/{enemy.MaxHp.Value}";
+			}
+			else
+			{
+				hp.text = $"<color=#FF4444>{enemy.Hp.Value - attackPrediction.Damage}</color>/{enemy.MaxHp.Value}";
+			}
 		}
 
 		public void Select()

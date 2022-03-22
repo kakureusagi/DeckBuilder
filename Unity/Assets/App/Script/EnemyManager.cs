@@ -14,7 +14,7 @@ namespace App
 			this.enemies = enemies;
 		}
 
-		public bool TryPick(Vector3 mousePosition, out EnemyPresenter result)
+		public bool TryGetEnemy(Vector3 mousePosition, out EnemyPresenter result)
 		{
 			result = null;
 			var ray = camera.ScreenPointToRay(mousePosition);
