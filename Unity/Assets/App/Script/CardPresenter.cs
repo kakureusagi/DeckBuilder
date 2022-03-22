@@ -40,9 +40,9 @@ namespace App
         {
             this.card = card;
             cardName.text = card.Name;
-            cost.text = card.Cost.ToString();
-            attack.text = card.Attack.ToString();
-            block.text = card.Block.ToString();
+            cost.text = $"コスト:{card.Cost}";
+            attack.text = $"アタック:{card.Attack}";
+            block.text = $"ブロック:{card.Block}";
         }
 
         public void Select()

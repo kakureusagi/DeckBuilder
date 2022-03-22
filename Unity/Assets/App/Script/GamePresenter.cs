@@ -43,10 +43,11 @@ namespace App
 			mouse = new Mouse(Camera.main);
 			chain.Hide();
 
-			for (int i = 0; i < 5; i++)
+			foreach (var card in game.Hand.Cards)
 			{
-				var card = Instantiate(cardPrefab, null);
-				hand.Add(card);
+				var cardPresenter = Instantiate(cardPrefab, null);
+				cardPresenter.Initialize(card);
+				hand.Add(cardPresenter);
 			}
 			
 			player.Initialize(game.Player);
