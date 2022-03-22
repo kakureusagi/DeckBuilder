@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace App
 {
-    public class Hand : MonoBehaviour
+    public class HandPresenter : MonoBehaviour
     {
 
         [SerializeField]

@@ -8,7 +8,7 @@ namespace App.State
 		readonly Game game;
 		readonly IMouse mouse;
 		readonly Chain chain;
-		readonly Hand hand;
+		readonly HandPresenter hand;
 		readonly PlayerPresenter player;
 		readonly EnemyManager enemyManager;
 		readonly DamageCalculator damageCalculator;
@@ -16,7 +16,7 @@ namespace App.State
 		CardPresenter currentCard;
 		EnemyPresenter currentEnemy;
 
-		public PlayerState(Game game, IMouse mouse, Chain chain, Hand hand, PlayerPresenter player, EnemyManager enemyManager, DamageCalculator damageCalculator)
+		public PlayerState(Game game, IMouse mouse, Chain chain, HandPresenter hand, PlayerPresenter player, EnemyManager enemyManager, DamageCalculator damageCalculator)
 		{
 			this.game = game;
 			this.mouse = mouse;

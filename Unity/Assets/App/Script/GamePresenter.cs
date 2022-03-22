@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using App.Input;
 using App.State;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 namespace App
 {
@@ -12,7 +11,7 @@ namespace App
 		CardPresenter cardPrefab = default;
 
 		[SerializeField]
-		Hand hand = default;
+		HandPresenter hand = default;
 
 		[SerializeField]
 		EnemyPresenter enemy = default;
