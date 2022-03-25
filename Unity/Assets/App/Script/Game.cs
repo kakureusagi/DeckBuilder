@@ -6,19 +6,19 @@ namespace App
 	{
 		public Player Player => player;
 		public Enemy[] Enemies => enemies;
-		public Hand Hand => hand;
+		public Deck Deck => deck;
 
 		readonly Player player;
-		readonly Hand hand;
+		readonly Deck deck;
 		readonly Enemy[] enemies;
-		readonly DamageCalculator damageCalculator = new DamageCalculator();
+		readonly DamageCalculator damageCalculator = new ();
 
 		public Game()
 		{
 			player = new Player(80);
-			enemies = new []{new Enemy(1, 100)};
+			enemies = new[] { new Enemy(1, 100) };
 
-			Card[] cards = new Card[5];
+			Card[] cards = new Card[20];
 			for (int i = 0; i < cards.Length; i++)
 			{
 				cards[i] = new Card
@@ -31,19 +31,30 @@ namespace App
 				};
 			}
 
-			hand = new Hand(cards);
+			deck = new Deck(cards);
+			deck.Draw(5);
 		}
 
-		public AttackPrediction PredictAttack(int enemyId)
+		public void EndTurn()
 		{
-			return damageCalculator.Attack(enemyId);
+			var temp = deck.Hand.ToArray();
+			foreach (var card in temp)
+			{
+				deck.Discard(card);
+			}
+
+			deck.Draw(5);
 		}
 
-		public void AttackToEnemy(int enemyId)
+		public void AttackToEnemy(Enemy target)
 		{
-			var prediction = damageCalculator.Attack(enemyId);
-			var enemy = enemies.First(x => x.Id == enemyId);
-			enemy.AddHp(-prediction.Damage);
+			var prediction = damageCalculator.Attack(target.Id);
+			target.AddHp(-prediction.Damage);
+		}
+
+		public void AttackToPlayer(Enemy from)
+		{
+			player.AddHp(-15);
 		}
 	}
 }

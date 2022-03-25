@@ -1,10 +1,16 @@
 using TMPro;
 using UnityEngine;
+#pragma warning disable CS0108, CS0114
 
 namespace App
 {
     public class CardPresenter : MonoBehaviour
     {
+
+        public Card Card => card;
+        public Collider2D Collider => collider;
+        public static float Width => 2;
+        public static float Height => 2;
 
         [SerializeField]
         GameObject isSelected = default;
@@ -25,11 +31,6 @@ namespace App
         Collider2D collider = default;
 
         Card card;
-
-        public static float Width => 2;
-        public static float Height => 2;
-
-        public Collider2D Collider => collider;
 
         void Awake()
         {

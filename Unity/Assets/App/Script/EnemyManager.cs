@@ -1,9 +1,13 @@
+using System.Collections.Generic;
 using UnityEngine;
+#pragma warning disable CS0108, CS0114
 
 namespace App
 {
 	public class EnemyManager : MonoBehaviour
 	{
+		public IReadOnlyList<EnemyPresenter> Enemies => enemies;
+
 		[SerializeField]
 		Camera camera = default;
 		

@@ -15,5 +15,10 @@ namespace App
 			this.hp = new(hp);
 			this.maxHp = new(hp);
 		}
+
+		public void AddHp(int hp)
+		{
+			this.hp.Value += hp;
+		}
 	}
 }

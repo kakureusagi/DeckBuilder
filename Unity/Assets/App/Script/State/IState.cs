@@ -2,6 +2,8 @@ namespace App.State
 {
 	public interface IState
 	{
-		IState Update();
+		void OnEnter();
+		StateType Update();
+		void OnLeave();
 	}
 }

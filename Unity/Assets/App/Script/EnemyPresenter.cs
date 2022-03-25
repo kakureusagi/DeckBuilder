@@ -2,12 +2,13 @@ using Cysharp.Threading.Tasks;
 using TMPro;
 using UniRx;
 using UnityEngine;
+#pragma warning disable CS0108, CS0114
 
 namespace App
 {
 	public class EnemyPresenter : MonoBehaviour
 	{
-		public int Id => enemy.Id;
+		public Enemy Enemy => enemy;
 		public Collider2D Collider => collider;
 		
 		

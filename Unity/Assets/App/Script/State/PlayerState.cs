@@ -1,5 +1,7 @@
+using System;
 using App.Input;
 using Cysharp.Threading.Tasks;
+using UniRx;
 
 namespace App.State
 {
@@ -8,32 +10,58 @@ namespace App.State
 		readonly Game game;
 		readonly IMouse mouse;
 		readonly Chain chain;
-		readonly HandPresenter hand;
+		readonly DeckPresenter deck;
 		readonly PlayerPresenter player;
 		readonly EnemyManager enemyManager;
 		readonly DamageCalculator damageCalculator;
+		readonly TurnEnd turnEnd;
 
 		CardPresenter currentCard;
 		EnemyPresenter currentEnemy;
 
-		public PlayerState(Game game, IMouse mouse, Chain chain, HandPresenter hand, PlayerPresenter player, EnemyManager enemyManager, DamageCalculator damageCalculator)
+		IDisposable turnEndClick;
+		bool turnEnded;
+
+		public PlayerState(Game game, IMouse mouse, Chain chain, DeckPresenter deck, PlayerPresenter player, EnemyManager enemyManager, DamageCalculator damageCalculator, TurnEnd turnEnd)
 		{
 			this.game = game;
 			this.mouse = mouse;
 			this.chain = chain;
-			this.hand = hand;
+			this.deck = deck;
 			this.player = player;
 			this.enemyManager = enemyManager;
 			this.damageCalculator = damageCalculator;
+			this.turnEnd = turnEnd;
 		}
 
-		public IState Update()
+		public void OnEnter()
 		{
+			turnEnded = false;
+			turnEndClick = turnEnd.OnClickAsObservable().Subscribe(_ =>
+			{
+				turnEnded = true;
+				game.EndTurn();
+			});
+		}
+
+		public void OnLeave()
+		{
+			turnEndClick.Dispose();
+			turnEndClick = null;
+		}
+
+		public StateType Update()
+		{
+			if (turnEnded)
+			{
+				return StateType.EnemyTurn;
+			}
+			
 			if (currentCard == null)
 			{
 				if (mouse.Button == MouseButton.Down)
 				{
-					if (hand.TryPick(mouse.Position, out var card))
+					if (deck.TryPick(mouse.Position, out var card))
 					{
 						currentCard = card;
 						currentCard.Select();
@@ -49,7 +77,7 @@ namespace App.State
 				if (enemyManager.TryGetEnemy(mouse.Position, out var enemy))
 				{
 					currentEnemy = enemy;
-					var prediction = damageCalculator.Attack(enemy.Id);
+					var prediction = damageCalculator.Attack(enemy.Enemy.Id);
 					enemy.SetPrediction(prediction);
 				}
 				else
@@ -66,7 +94,8 @@ namespace App.State
 					if (currentEnemy != null)
 					{
 						player.Attack().Forget();
-						game.AttackToEnemy(currentEnemy.Id);
+						game.AttackToEnemy(currentEnemy.Enemy);
+						game.Deck.Discard(currentCard.Card);
 						
 						currentEnemy.ResetPrediction();
 						currentEnemy = null;
@@ -78,7 +107,7 @@ namespace App.State
 				}
 			}
 
-			return this;
+			return StateType.PlayerTurn;
 		}
 	}
 }

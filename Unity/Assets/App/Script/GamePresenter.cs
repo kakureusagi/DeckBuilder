@@ -8,10 +8,7 @@ namespace App
 	public class GamePresenter : MonoBehaviour
 	{
 		[SerializeField]
-		CardPresenter cardPrefab = default;
-
-		[SerializeField]
-		HandPresenter hand = default;
+		DeckPresenter deck = default;
 
 		[SerializeField]
 		EnemyPresenter enemy = default;
@@ -25,6 +22,9 @@ namespace App
 		[SerializeField]
 		EnemyManager enemyManager = default;
 
+		[SerializeField]
+		TurnEnd turnEnd = default;
+
 		readonly List<CardPresenter> cards = new();
 
 		Game game;
@@ -32,44 +32,53 @@ namespace App
 		CardPresenter currentCard;
 		EnemyPresenter currentEnemyPresenter;
 
-		Dictionary<State.State, IState> states;
+		Dictionary<StateType, IState> states;
 		IState currentState;
+		StateType currentStateType;
 
 		void Start()
 		{
 			// 雑にここで開始する
 			game = new Game();
-			
+
 			mouse = new Mouse(Camera.main);
 			chain.Hide();
 
-			foreach (var card in game.Hand.Cards)
-			{
-				var cardPresenter = Instantiate(cardPrefab, null);
-				cardPresenter.Initialize(card);
-				hand.Add(cardPresenter);
-			}
-			
+			deck.Initialize(game.Deck);
+
 			player.Initialize(game.Player);
 
 			enemy.Initialize(game.Enemies[0]);
 			enemyManager.Initialize(new[] { enemy });
 
-			states = new Dictionary<State.State, IState>
+			states = new Dictionary<StateType, IState>
 			{
-				{ State.State.PlayerTurn, new PlayerState(game, mouse, chain, hand, player, enemyManager, new DamageCalculator()) },
+				{ StateType.PlayerTurn, new PlayerState(game, mouse, chain, deck, player, enemyManager, new DamageCalculator(), turnEnd) },
+				{ StateType.None, new NoneState() },
+				{ StateType.EnemyTurn, new EnemyState(game, enemyManager) },
 			};
 
-			currentState = states[State.State.PlayerTurn];
+			currentStateType = StateType.None;
+			currentState = new NoneState();
 		}
 
 		public void Update()
 		{
 			mouse.Update();
-			var nextState = currentState.Update();
-			if (nextState != currentState)
+
+			if (currentStateType == StateType.None)
 			{
-				currentState = nextState;
+				currentState = states[StateType.PlayerTurn];
+				currentState.OnEnter();
+			}
+
+			var nextStateType = currentState.Update();
+			if (nextStateType != currentStateType)
+			{
+				currentStateType = nextStateType;
+				currentState.OnLeave();
+				currentState = states[currentStateType];
+				currentState.OnEnter();
 			}
 		}
 	}
